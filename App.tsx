@@ -2,9 +2,36 @@ import * as React from 'react';
 import './style.css';
 
 const Rdata: any = [
-  { id: 1, label: 'js', isItemChecked: false },
-  { id: 2, label: 'html', isItemChecked: false },
-  { id: 3, label: 'css', isItemChecked: false },
+  {
+    id: 1,
+    label: 'js',
+    isItemChecked: false,
+    statuses: [
+      { id: 1, label: 'js-1', isItemChecked: false },
+      { id: 2, label: 'js-2', isItemChecked: false },
+      { id: 3, label: 'js-3', isItemChecked: false },
+    ],
+  },
+  {
+    id: 2,
+    label: 'html',
+    isItemChecked: false,
+    statuses: [
+      { id: 1, label: 'html-1', isItemChecked: false },
+      { id: 2, label: 'html-2', isItemChecked: false },
+      { id: 3, label: 'html-3', isItemChecked: false },
+    ],
+  },
+  {
+    id: 3,
+    label: 'css',
+    isItemChecked: false,
+    statuses: [
+      { id: 1, label: 'css-1', isItemChecked: false },
+      { id: 2, label: 'css-2', isItemChecked: false },
+      { id: 3, label: 'css-3', isItemChecked: false },
+    ],
+  },
 ];
 
 export default function App() {
@@ -29,10 +56,17 @@ export default function App() {
 
   const handleAllClick = (i, e) => {
     const tempData = [...data];
-    const newData = tempData.map((item, index) => ({
-      ...item,
-      isItemChecked: !item.isItemChecked,
-    }));
+    const newData = tempData.map((item, index) => {
+      const newI = item.statuses.map((status) => ({
+        ...status,
+        isItemChecked: !status.isItemChecked,
+      }));
+      return {
+        ...item,
+        isItemChecked: !item.isItemChecked,
+        statuses: [...newI],
+      };
+    });
     setData(newData);
   };
 
@@ -40,10 +74,39 @@ export default function App() {
     const tempData = [...data];
     const n = tempData.map((item, index) => {
       if (index === i) {
-        return { ...item, isItemChecked: !item.isItemChecked };
+        const newI = item.statuses.map((status) => ({
+          ...status,
+          isItemChecked: !status.isItemChecked,
+        }));
+        return {
+          ...item,
+          isItemChecked: !item.isItemChecked,
+          statuses: [...newI],
+        };
       } else {
         return { ...item };
       }
+    });
+    setData(n);
+  };
+
+  const handleSubItemChange = (i) => {
+    console.log(i, 'idx');
+    const tempData = [...data];
+    const n = tempData.map((item, index) => {
+      const newI = item.statuses.map((status, idx) => {
+        if (idx === i) {
+          return {
+            ...status,
+            isItemChecked: !status.isItemChecked,
+          };
+        } else {
+          return {
+            ...status,
+          };
+        }
+      });
+      return { ...item, statuses: [...newI] };
     });
     setData(n);
   };
@@ -69,6 +132,22 @@ export default function App() {
                 onChange={() => handleChange(index)}
               />
               <label>{item.label}</label>
+              <div>
+                {item?.statuses &&
+                  item.statuses.map((status, idx: number) => {
+                    return (
+                      <div style={{ marginLeft: '1.5rem' }}>
+                        <input
+                          type="checkbox"
+                          value={`${status.label}`}
+                          checked={status.isItemChecked}
+                          onChange={() => handleSubItemChange(idx)}
+                        />
+                        <label>{status.label}</label>
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
           );
         })}
